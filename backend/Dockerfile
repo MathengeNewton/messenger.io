@@ -22,12 +22,12 @@ RUN npm run build
 # Remove dev dependencies after build to reduce image size
 RUN npm prune --production
 
-# Expose the port your app runs on
-EXPOSE 3000
+# Expose the port your app runs on (default 4500, can be overridden via PORT env var)
+EXPOSE 4500
 
-# Health check
+# Health check (docker-compose.yml overrides this with the correct port)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+  CMD curl -f http://localhost:4500/api/health || exit 1
 
 # Command to run the app
 CMD ["npm", "run", "start:prod"]

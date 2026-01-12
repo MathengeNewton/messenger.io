@@ -34,6 +34,8 @@ services:
       DATABASE_NAME: messenger_db
       PORT: 4500
       NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
     ports:
       - "4500:4500"  # Backend exposed on localhost:4500
     command: npm run start:prod
