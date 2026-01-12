@@ -32,15 +32,15 @@ services:
       DATABASE_USER: messenger
       DATABASE_PASSWORD: messenger_pass
       DATABASE_NAME: messenger_db
-      PORT: 3000
+      PORT: 4500
       NODE_ENV: production
     ports:
-      - "3000:3000"  # Backend exposed on localhost:3000
+      - "4500:4500"  # Backend exposed on localhost:4500
     command: npm run start:prod
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:4500/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -49,11 +49,11 @@ services:
     build:
       context: ./frontend
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:3000/api
+        NEXT_PUBLIC_API_URL: https://messenger-api.jerdyl.co.ke/api
     container_name: messenger-frontend
     restart: unless-stopped
     ports:
-      - "3001:3000"  # Frontend on localhost:3001
+      - "3010:3000"  # Frontend on localhost:3010
     networks:
       - app-network
     depends_on:
