@@ -59,19 +59,6 @@ services:
     depends_on:
       - backend
 
-  proxy:
-    build: ./proxy
-    container_name: messenger-proxy
-    restart: unless-stopped
-    ports:
-      - "80:80" 
-      - "443:443" 
-    networks:
-      - app-network
-    depends_on:
-      - backend
-      - frontend
-
 volumes:
   db_data: {}
 
