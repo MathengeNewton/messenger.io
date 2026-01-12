@@ -13,10 +13,12 @@ RUN apt-get update && apt-get install -y \
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm config set registry https://registry.npmjs.org/ && \
+# Use BuildKit cache mount for npm cache (faster subsequent builds)
+RUN --mount=type=cache,target=/root/.npm \
+    npm config set registry https://registry.npmjs.org/ && \
     npm config set fetch-timeout 300000 && \
     npm config set fetch-retries 5 && \
-    npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+    npm ci --legacy-peer-deps --prefer-offline --no-audit || npm install --legacy-peer-deps --prefer-offline --no-audit
 
 # Copy the rest of the project files
 COPY . .

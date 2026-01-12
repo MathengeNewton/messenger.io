@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Copy package files and install all dependencies (needed for build)
 COPY package*.json ./
-RUN npm ci && npm cache clean --force
+# Use BuildKit cache mount for npm cache (faster subsequent builds)
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit
 
 # Copy the rest of the project files
 COPY . .
