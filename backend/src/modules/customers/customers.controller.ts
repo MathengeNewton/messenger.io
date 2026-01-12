@@ -30,7 +30,7 @@ export class CustomersController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new customer (Admin/Cashier)' })
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   create(@Body() createCustomerDto: CreateCustomerDto) {

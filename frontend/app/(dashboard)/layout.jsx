@@ -32,26 +32,13 @@ export default function DashboardLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Cashier menu - Messenger Operations
-  const cashierMenu = [
-    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Stock Session", href: "/dashboard/stock", icon: ClipboardDocumentListIcon },
-    { name: "New Sale", href: "/dashboard/sales/new", icon: CreditCardIcon },
-    { name: "Sales", href: "/dashboard/sales", icon: ChartBarIcon },
-  ];
-
   // Admin menu - Messenger Admin
   const adminMenu = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Stock Session", href: "/dashboard/stock", icon: ClipboardDocumentListIcon },
-    { name: "New Sale", href: "/dashboard/sales/new", icon: CreditCardIcon },
-    { name: "Sales", href: "/dashboard/sales", icon: ChartBarIcon },
-    { name: "Reports", href: "/dashboard/reports", icon: ChartBarIcon },
-    { name: "Products", href: "/admin/products", icon: BriefcaseIcon },
-    { name: "Suppliers", href: "/admin/suppliers", icon: BriefcaseIcon },
-    { name: "Customers", href: "/admin/customers", icon: UserIcon },
-    { name: "Users", href: "/admin/users", icon: UserIcon },
-    { name: "Settings", href: "/admin/settings", icon: CogIcon },
+    { name: "Groups", href: "/dashboard/groups", icon: FolderOpenIcon },
+    { name: "Contacts", href: "/dashboard/contacts", icon: UserIcon },
+    { name: "Messages", href: "/dashboard/messages", icon: ChatBubbleLeftRightIcon },
+    { name: "Settings", href: "/dashboard/settings", icon: CogIcon },
   ];
 
   // Determine menu based on user role (for now, use adminMenu)

@@ -21,13 +21,12 @@ export class SeedService implements OnApplicationBootstrap {
   }
 
   private async seedRoles() {
-    const roles = Object.values(UserRole);
-    for (const name of roles) {
-      const exists = await this.roleRepo.findOne({ where: { name } });
-      if (!exists) {
-        await this.roleRepo.save(this.roleRepo.create({ name }));
-        this.logger.log(`Seeded role: ${name}`);
-      }
+    // Only seed ADMIN role for messenger platform
+    const adminRole = UserRole.ADMIN;
+    const exists = await this.roleRepo.findOne({ where: { name: adminRole } });
+    if (!exists) {
+      await this.roleRepo.save(this.roleRepo.create({ name: adminRole }));
+      this.logger.log(`Seeded role: ${adminRole}`);
     }
   }
 

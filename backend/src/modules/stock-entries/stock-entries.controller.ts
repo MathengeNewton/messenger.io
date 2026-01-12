@@ -29,7 +29,7 @@ export class StockEntriesController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a stock entry (Cashier/Admin)' })
   create(@Body() createEntryDto: CreateStockEntryDto, @Request() req) {
     return this.stockEntriesService.create(createEntryDto, req.user.userId);
@@ -60,7 +60,7 @@ export class StockEntriesController {
 
   @Patch(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Update a stock entry (Cashier/Admin)' })
   update(@Param('id') id: string, @Body() updateEntryDto: UpdateStockEntryDto, @Request() req) {
     return this.stockEntriesService.update(+id, updateEntryDto, req.user.userId);
@@ -68,7 +68,7 @@ export class StockEntriesController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete a stock entry (Cashier/Admin)' })
   remove(@Param('id') id: string) {
     return this.stockEntriesService.remove(+id);

@@ -4,16 +4,28 @@ import { useRouter } from "next/navigation";
 import { apiClient } from "../../../lib/api";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import {
+  ChatBubbleLeftRightIcon,
+  UserGroupIcon,
+  UserIcon,
+  CurrencyDollarIcon,
+  CalendarIcon,
+  ChartBarIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/react/24/outline";
 
-export default function CashierDashboard() {
+export default function MessengerDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [currentSession, setCurrentSession] = useState(null);
-  const [stats, setStats] = useState({
-    todaySales: 0,
-    todayRevenue: 0,
-    unpaidSales: 0,
-    activeProducts: 0,
+  const [metrics, setMetrics] = useState({
+    totalSmsSent: 0,
+    totalGroups: 0,
+    totalContacts: 0,
+    smsBalance: 0,
+    messagesToday: 0,
+    messagesThisWeek: 0,
+    messagesThisMonth: 0,
+    failedMessages: 0,
   });
 
   useEffect(() => {
@@ -24,32 +36,9 @@ export default function CashierDashboard() {
     try {
       setLoading(true);
       
-      // Get current session
-      const sessionRes = await apiClient.stockSessions.getCurrent();
-      const session = sessionRes.data;
-      setCurrentSession(session);
-
-      if (session) {
-        // Get today's sales
-        const today = new Date().toISOString().split('T')[0];
-        const salesRes = await apiClient.sales.getAll({ sessionId: session.id, date: today });
-        const sales = salesRes.data || [];
-        
-        const paidSales = sales.filter(s => s.paymentStatus === 'PAID');
-        const unpaidSales = sales.filter(s => s.paymentStatus === 'PENDING');
-        
-        setStats({
-          todaySales: sales.length,
-          todayRevenue: paidSales.reduce((sum, s) => sum + parseFloat(s.totalAmount || 0), 0),
-          unpaidSales: unpaidSales.length,
-          activeProducts: 0, // Will be loaded separately
-        });
-      }
-
-      // Get active products count
-      const productsRes = await apiClient.products.getActive();
-      const activeProducts = productsRes.data || [];
-      setStats(prev => ({ ...prev, activeProducts: activeProducts.length }));
+      // Load dashboard metrics
+      const metricsRes = await apiClient.dashboard.getMetrics();
+      setMetrics(metricsRes.data);
 
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -57,10 +46,6 @@ export default function CashierDashboard() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleOpenSession = () => {
-    router.push('/dashboard/stock');
   };
 
   if (loading) {
@@ -78,98 +63,30 @@ export default function CashierDashboard() {
           <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
             Messenger.io Dashboard
           </h1>
-          <p className="text-gray-600 mt-1">Welcome back! Here's today's overview.</p>
+          <p className="text-gray-600 mt-1">Welcome back! Here's your messaging platform overview.</p>
         </div>
         <div className="flex gap-2">
-          {!currentSession ? (
-            <button
-              onClick={handleOpenSession}
-              className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-[#1e88b5] transition-colors text-sm"
-            >
-              Open Stock Session
-            </button>
-          ) : (
-            <Link
-              href="/dashboard/sales/new"
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors text-sm"
-            >
-              New Sale
-            </Link>
-          )}
+          <Link
+            href="/dashboard/messages"
+            className="bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-[#1e88b5] transition-colors text-sm"
+          >
+            Send Message
+          </Link>
         </div>
       </div>
 
-      {/* Session Status Card */}
-      <div className={`p-6 rounded-xl shadow-sm border-2 ${
-        currentSession 
-          ? currentSession.status === 'OPEN' 
-            ? 'bg-green-50 border-green-200' 
-            : 'bg-gray-50 border-gray-200'
-          : 'bg-yellow-50 border-yellow-200'
-      }`}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Stock Session Status
-            </h3>
-            {currentSession ? (
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">
-                  Date: {new Date(currentSession.sessionDate).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Status: <span className={`font-semibold ${
-                    currentSession.status === 'OPEN' ? 'text-green-600' : 'text-gray-600'
-                  }`}>
-                    {currentSession.status}
-                  </span>
-                </p>
-                {currentSession.status === 'OPEN' && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Session opened by: {currentSession.openedBy?.name || 'N/A'}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-600">
-                No active session. Open a stock session to start selling.
-              </p>
-            )}
-          </div>
-          <div className="text-right">
-            {currentSession && currentSession.status === 'OPEN' ? (
-              <Link
-                href="/dashboard/stock"
-                className="inline-block bg-blue-900 text-white px-4 py-2 rounded-md hover:bg-[#1e88b5] transition-colors text-sm"
-              >
-                Manage Stock
-              </Link>
-            ) : (
-              <button
-                onClick={handleOpenSession}
-                className="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 transition-colors text-sm"
-              >
-                Open Session
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
+      {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Today's Sales</p>
+              <p className="text-sm text-gray-600">Total SMS Sent</p>
               <p className="text-2xl font-bold text-gray-900">
-                {stats.todaySales}
+                {metrics.totalSmsSent.toLocaleString()}
               </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
-              <svg className="w-7 h-7 text-[#0D47A1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+              <ChatBubbleLeftRightIcon className="w-7 h-7 text-blue-600" />
             </div>
           </div>
         </div>
@@ -177,79 +94,134 @@ export default function CashierDashboard() {
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Today's Revenue</p>
+              <p className="text-sm text-gray-600">Total Groups</p>
               <p className="text-2xl font-bold text-gray-900">
-                KES {stats.todayRevenue.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
-              </p>
-            </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Unpaid Sales</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.unpaidSales}
-              </p>
-            </div>
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <svg className="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Active Products</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.activeProducts}
+                {metrics.totalGroups}
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-full">
-              <svg className="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10l-8-4m8 4v10M4 7v10l8 4" />
-              </svg>
+              <UserGroupIcon className="w-7 h-7 text-purple-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Contacts</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.totalContacts}
+              </p>
+            </div>
+            <div className="p-3 bg-green-100 rounded-full">
+              <UserIcon className="w-7 h-7 text-green-600" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">SMS Balance</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {metrics.smsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </p>
+            </div>
+            <div className="p-3 bg-yellow-100 rounded-full">
+              <CurrencyDollarIcon className="w-7 h-7 text-yellow-600" />
             </div>
           </div>
         </div>
       </div>
 
+      {/* Activity Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-gray-600">Messages Today</p>
+            <CalendarIcon className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            {metrics.messagesToday}
+          </p>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-gray-600">Messages This Week</p>
+            <ChartBarIcon className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            {metrics.messagesThisWeek}
+          </p>
+        </div>
+
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-gray-600">Messages This Month</p>
+            <ChartBarIcon className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-2xl font-bold text-gray-900">
+            {metrics.messagesThisMonth}
+          </p>
+        </div>
+      </div>
+
+      {/* Failed Messages Alert */}
+      {metrics.failedMessages > 0 && (
+        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-6">
+          <div className="flex items-center gap-3">
+            <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600" />
+            <div>
+              <h3 className="font-semibold text-yellow-900 mb-1">
+                Failed Messages Alert
+              </h3>
+              <p className="text-sm text-yellow-800">
+                You have {metrics.failedMessages} failed message{metrics.failedMessages !== 1 ? 's' : ''}. 
+                <Link href="/dashboard/messages" className="underline ml-1 font-medium">
+                  View and resend them
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
-          href="/dashboard/stock"
+          href="/dashboard/groups"
           className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all"
         >
-          <h3 className="font-semibold text-gray-900 mb-2">Stock Management</h3>
-          <p className="text-sm text-gray-600">Manage opening stock, incoming stock, and closing stock</p>
+          <div className="flex items-center gap-3 mb-3">
+            <UserGroupIcon className="w-8 h-8 text-blue-600" />
+            <h3 className="font-semibold text-gray-900">Manage Groups</h3>
+          </div>
+          <p className="text-sm text-gray-600">Create and manage contact groups for messaging</p>
         </Link>
 
         <Link
-          href="/dashboard/sales/new"
+          href="/dashboard/contacts"
           className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-green-500 hover:shadow-md transition-all"
         >
-          <h3 className="font-semibold text-gray-900 mb-2">New Sale</h3>
-          <p className="text-sm text-gray-600">Create a new sale and generate receipt</p>
+          <div className="flex items-center gap-3 mb-3">
+            <UserIcon className="w-8 h-8 text-green-600" />
+            <h3 className="font-semibold text-gray-900">Manage Contacts</h3>
+          </div>
+          <p className="text-sm text-gray-600">Add, edit, and organize your contacts</p>
         </Link>
 
         <Link
-          href="/dashboard/sales"
+          href="/dashboard/messages"
           className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-purple-500 hover:shadow-md transition-all"
         >
-          <h3 className="font-semibold text-gray-900 mb-2">View Sales</h3>
-          <p className="text-sm text-gray-600">View all sales and manage payments</p>
+          <div className="flex items-center gap-3 mb-3">
+            <ChatBubbleLeftRightIcon className="w-8 h-8 text-purple-600" />
+            <h3 className="font-semibold text-gray-900">Send Messages</h3>
+          </div>
+          <p className="text-sm text-gray-600">Send instant or scheduled messages to contacts or groups</p>
         </Link>
       </div>
     </div>
   );
 }
-

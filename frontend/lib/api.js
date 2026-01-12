@@ -78,6 +78,28 @@ export const apiClient = {
     delete: (id) => api.delete(`/users/${id}`),
   },
 
+  // Contacts
+  contacts: {
+    getAll: (params) => api.get('/contacts', { params }),
+    getById: (id) => api.get(`/contacts/${id}`),
+    search: (query, limit) => api.get('/contacts/search', { params: { q: query, limit } }),
+    create: (data) => api.post('/contacts', data),
+    bulkCreate: (data) => api.post('/contacts/bulk', data),
+    update: (id, data) => api.put(`/contacts/${id}`, data),
+    delete: (id) => api.delete(`/contacts/${id}`),
+  },
+
+  // Groups
+  groups: {
+    getAll: () => api.get('/groups'),
+    getById: (id) => api.get(`/groups/${id}`),
+    create: (data) => api.post('/groups', data),
+    update: (id, data) => api.put(`/groups/${id}`, data),
+    delete: (id) => api.delete(`/groups/${id}`),
+    addContacts: (id, data) => api.post(`/groups/${id}/contacts`, data),
+    removeContact: (groupId, contactId) => api.delete(`/groups/${groupId}/contacts/${contactId}`),
+  },
+
   // Uploads
   uploads: {
     upload: (file) => {
@@ -90,6 +112,43 @@ export const apiClient = {
       });
     },
     getFile: (filename) => `${API_BASE_URL}/uploads/${filename}`,
+  },
+
+  // Messages
+  messages: {
+    getAll: (params) => api.get('/messages', { params }),
+    getById: (id) => api.get(`/messages/${id}`),
+    create: (data) => api.post('/messages', data),
+    update: (id, data) => api.put(`/messages/${id}`, data),
+    delete: (id) => api.delete(`/messages/${id}`),
+    resend: (id) => api.post(`/messages/${id}/resend`),
+    getRecipients: (id) => api.get(`/messages/${id}/recipients`),
+  },
+
+  // Dashboard
+  dashboard: {
+    getMetrics: () => api.get('/dashboard/metrics'),
+  },
+
+  // SMS Provider
+  smsProvider: {
+    getConfig: () => api.get('/sms-provider/config'),
+    createOrUpdateConfig: (data) => api.post('/sms-provider/config', data),
+    updateConfig: (id, data) => api.put(`/sms-provider/config/${id}`, data),
+    getBalance: () => api.get('/sms-provider/balance'),
+    refreshBalance: () => api.post('/sms-provider/balance/refresh'),
+    testSms: (data) => api.post('/sms-provider/test', data),
+  },
+
+  // Uploads
+  uploads: {
+    uploadExcel: (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      return api.post('/uploads/excel', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    },
   },
 
   // Settings / Profile

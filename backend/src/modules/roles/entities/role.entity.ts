@@ -15,12 +15,4 @@ export class Role {
 
 export enum UserRole {
   ADMIN = 'admin',
-  CASHIER = 'cashier',
-  FIELD_AGENT = 'field_agent',
-  STAFF = 'staff',
-  VET = 'vet',
-  PARTNER = 'partner',
-  APP = 'app',
-  GUEST = 'guest',
-  OWNER = 'owner',
 }

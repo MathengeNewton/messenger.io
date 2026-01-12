@@ -24,7 +24,7 @@ export class StockSessionsController {
 
   @Post('open')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Open a new stock session (Cashier/Admin)' })
   async openSession(@Body() openSessionDto: OpenSessionDto, @Request() req) {
     return await this.stockSessionsService.openSession(openSessionDto, req.user.userId);
@@ -32,7 +32,7 @@ export class StockSessionsController {
 
   @Post(':id/close')
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Close a stock session (Cashier/Admin)' })
   async closeSession(@Param('id') id: string, @Request() req) {
     return await this.stockSessionsService.closeSession(+id, req.user.userId);

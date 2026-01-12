@@ -157,16 +157,12 @@ export default function DashBoardHeader() {
 
             <div className="py-2">
               <Link
-                href={
-                  userRole === "admin" || userRole === "ADMIN"
-                    ? "/admin/dashboard/profile"
-                    : "/user/dashboard/profile"
-                }
+                href="/dashboard/settings"
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 onClick={() => setIsDropdownOpen(false)}
               >
                 <UserIcon className="w-5 h-5" />
-                My Profile
+                Settings
               </Link>
 
               <button

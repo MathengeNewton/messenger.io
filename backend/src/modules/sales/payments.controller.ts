@@ -26,7 +26,7 @@ export class PaymentsController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN, UserRole.ADMIN)
   @ApiOperation({ summary: 'Record payment for a sale (Cashier/Admin)' })
   create(@Body() createPaymentDto: CreatePaymentDto, @Request() req) {
     return this.paymentsService.createPayment(createPaymentDto, req.user.userId);

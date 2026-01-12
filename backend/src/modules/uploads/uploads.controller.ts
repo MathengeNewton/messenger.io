@@ -26,7 +26,7 @@ export class UploadsController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.CASHIER)
+  @Roles(UserRole.ADMIN)
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Upload a file (photo for wastage)' })
   @ApiConsumes('multipart/form-data')
@@ -54,6 +54,27 @@ export class UploadsController {
   async getFile(@Param('filename') filename: string, @Res() res: Response) {
     const fileStream = this.uploadsService.getFileStream(`uploads/wastage/${filename}`);
     fileStream.pipe(res);
+  }
+
+  @Post('excel')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Upload Excel file for contacts import' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadExcel(@UploadedFile() file: Express.Multer.File) {
+    return await this.uploadsService.parseExcelFile(file);
   }
 }
 

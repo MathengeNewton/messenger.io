@@ -8,11 +8,22 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from './modules/users/entities/user.entity';
 import { Role } from './modules/roles/entities/role.entity';
+import { Contact } from './modules/contacts/entities/contact.entity';
+import { Group } from './modules/groups/entities/group.entity';
+import { SmsProviderConfig } from './modules/sms-provider/entities/sms-provider-config.entity';
+import { Message } from './modules/messages/entities/message.entity';
+import { MessageRecipient } from './modules/messages/entities/message-recipient.entity';
 import { SeedService } from './core/seed/seed.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { ContactsModule } from './modules/contacts/contacts.module';
+import { GroupsModule } from './modules/groups/groups.module';
+import { MessagesModule } from './modules/messages/messages.module';
+import { SmsProviderModule } from './modules/sms-provider/sms-provider.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import AppConfig from './core/config/app.config';
 
 @Module({
@@ -31,6 +42,11 @@ import AppConfig from './core/config/app.config';
     TypeOrmModule.forFeature([
       User,
       Role,
+      Contact,
+      Group,
+      SmsProviderConfig,
+      Message,
+      MessageRecipient,
     ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -52,7 +68,13 @@ import AppConfig from './core/config/app.config';
     AuthModule,
     UsersModule,
     RolesModule,
+    ContactsModule,
+    GroupsModule,
+    MessagesModule,
+    SmsProviderModule,
+    DashboardModule,
     UploadsModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [AppService, SeedService],
